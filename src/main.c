@@ -1,15 +1,8 @@
-//
-//  main.c
-//  Extension
-//
-//  Created by Dave Hayden on 7/30/14.
-//  Copyright (c) 2014 Panic, Inc. All rights reserved.
-//
-
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "pd_api.h"
+#include "collision.h"
 
 static PlaydateAPI* pd = NULL;
 void setPDPtr(PlaydateAPI* p) {
@@ -583,85 +576,66 @@ int deathScreenCheck() {
     return 0;
 }
 
+struct box_collider CD_SQUIRREL_L2 = {{65, 43},40, 40, TOP_LEFT};
+struct box_collider CD_SQUIRREL_L1 = {{84,23}, 40, 40, TOP_LEFT};
+struct box_collider CD_SQUIRREL_C = {{106, 20}, 40, 40, TOP_LEFT};
+struct box_collider CD_SQUIRREL_R1 = {{130,23}, 40, 40, TOP_LEFT};
+struct box_collider CD_SQUIRREL_R2 = {{151, 43}, 40, 40, TOP_LEFT};
+struct box_collider CD_ACORN = {{0, 0, }, 40, 40, TOP_LEFT};
+struct box_collider CD_SPIDER = {{0, 0}, 30, 10, CENTER};
+
 void collisionDetection() {
-    int sq_x = squirrel_x;
-    int sq_y = squirrel_y;
-    int cd_sq_l2_x = 65;
-    int cd_sq_l2_y = 43;
-    int cd_sq_l1_x = 84;
-    int cd_sq_l1_y = 23;
-    int cd_sq_c_x = 106;
-    int cd_sq_c_y = 20;
-    int cd_sq_r1_x = 130;
-    int cd_sq_r1_y = 23;
-    int cd_sq_r2_x = 151;
-    int cd_sq_r2_y = 43;
-    int cd_x = 0;
-    int cd_y = 0;
-    int cd_width = 40;
-    int cd_height = 40;
+    struct box_collider sq_cd;
     switch (SQUIRREL_CURRENT) {
         case -2:
-            cd_x = cd_sq_l2_x;
-            cd_y = cd_sq_l2_y;
+            sq_cd = CD_SQUIRREL_L2;
             break;
         case -1:
-            cd_x = cd_sq_l1_x;
-            cd_y = cd_sq_l1_y;
+            sq_cd = CD_SQUIRREL_L1;
             break;
         case 0:
-            cd_x = cd_sq_c_x;
-            cd_y = cd_sq_c_y;
+            sq_cd = CD_SQUIRREL_C;
             break;
         case 1:
-            cd_x = cd_sq_r1_x;
-            cd_y = cd_sq_r1_y;
+            sq_cd = CD_SQUIRREL_R1;
             break;
         case 2:
-            cd_x = cd_sq_r2_x;
-            cd_y = cd_sq_r2_y;
+            sq_cd = CD_SQUIRREL_R2;
             break;
+        default:
+            sq_cd = CD_SQUIRREL_C;
+            printf("Shouldn't happen collisionDetection()");
     }
-    cd_x += sq_x;
-    cd_y += sq_y;
-    int acorn_w = 40;
-    int acorn_h = 40;
-#if SHOW_DEBUG_COLLIDERS
-    pd->graphics->drawRect(cd_x, cd_y, cd_width, cd_height, kColorWhite);
-    pd->graphics->drawRect(acorn_x, acorn_y, acorn_w, acorn_h, kColorWhite);
-#endif
+    struct vector2 sq_pos = {
+            squirrel_x, squirrel_y
+    };
+    struct vector2 acorn_pos = {
+            acorn_x, acorn_y
+    };
+
     if (!acorn_eaten) {
-        if ((acorn_x >= cd_x && acorn_x <= cd_x + cd_width
-             && acorn_y >= cd_y && acorn_y <= cd_y + cd_height)
-            || (acorn_x + acorn_w >= cd_x && acorn_x + acorn_w <= cd_x + cd_width
-                && acorn_y + acorn_h >= cd_y && acorn_y + acorn_h <= cd_y + cd_height)
-                ) {
-            // We have a collision, folks.
+        int collision = detect(sq_pos, acorn_pos, sq_cd, CD_ACORN);
+        if (collision) {
             score += 1;
             acorn_eaten = 1;
             playEatAcorn();
         }
     }
-    int spider_cd_w = 30;
-    int spider_cd_h = 10;
-    int spider_cd_x = spider_x - (spider_cd_w/2);
-    int spider_cd_y = spider_y + (spider_cd_h/2);
 #if SHOW_DEBUG_COLLIDERS
-    pd->graphics->drawLine(spider_top_left_x, spider_top_left_y, spider_top_right_x, spider_top_right_y, 1, kColorWhite);
-    pd->graphics->drawLine(spider_top_left_x, spider_top_left_y, spider_bottom_left_x, spider_bottom_left_y, 1, kColorWhite);
-    pd->graphics->drawLine(spider_bottom_left_x, spider_bottom_left_y, spider_bottom_right_x, spider_bottom_right_y, 1, kColorWhite);
-    pd->graphics->drawLine(spider_top_right_x, spider_top_right_y, spider_bottom_right_x, spider_bottom_right_y, 1, kColorWhite);
-    pd->graphics->drawRect(spider_cd_x, spider_cd_y, spider_cd_w, spider_cd_h, kColorWhite);
+    pd->graphics->drawRect(sq_pos.x, sq_pos.y, sq_cd.width, sq_cd.height, kColorWhite);
+    pd->graphics->drawRect(acorn_pos.x, acorn_pos.y, CD_ACORN.width, CD_ACORN.height, kColorWhite);
 #endif
-    if ((spider_cd_x >= cd_x && spider_cd_x <= cd_x + cd_width
-         && spider_cd_y >= cd_y && spider_cd_y <= cd_y + cd_height)
-        || (spider_cd_x + spider_cd_w >= cd_x && spider_cd_x + spider_cd_w <= cd_x + cd_width
-            && spider_cd_y + spider_cd_h >= cd_y && spider_cd_y + spider_cd_h <= cd_y + cd_height)
-            ) {
-        // We have a collision, folks.
-        // die
+
+    struct vector2 spider_pos = {
+            spider_x, spider_y
+    };
+    int collision = detect(sq_pos, spider_pos, sq_cd, CD_SPIDER);
+    if (collision) {
         IS_DEATH_SCREEN = 1;
     }
+#if SHOW_DEBUG_COLLIDERS
+    pd->graphics->drawRect(spider_cd_x, spider_cd_y, spider_cd_w, spider_cd_h, kColorWhite);
+#endif
 }
 
 void spiderUpdate() {
