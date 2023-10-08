@@ -1,15 +1,4 @@
-#include <assert.h>
-#include <stdio.h>
-
 #include "collision.h"
-
-struct box_collider SQUIRREL_L2 = {{65, 43},40, 40, TOP_LEFT};
-struct box_collider SQUIRREL_L1 = {{84,23}, 40, 40, TOP_LEFT};
-struct box_collider SQUIRREL_C = {{106, 20}, 40, 40, TOP_LEFT};
-struct box_collider SQUIRREL_R1 = {{130,23}, 40, 40, TOP_LEFT};
-struct box_collider SQUIRREL_R2 = {{151, 43}, 40, 40, TOP_LEFT};
-struct box_collider ACORN = {{0, 0, }, 40, 40, TOP_LEFT};
-struct box_collider SPIDER = {{0, 0}, 30, 10, CENTER};
 
 int detect(
         struct vector2 p1, struct vector2 p2,
@@ -33,12 +22,6 @@ int detect(
         // We have a collision, folks.
         return 1;
     }
-    return 0;
-}
 
-// Tests
-int main() {
-    assert(SQUIRREL_L2.pos.y == 43);
-    printf("PASSED");
     return 0;
 }

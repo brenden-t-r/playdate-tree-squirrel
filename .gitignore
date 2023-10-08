@@ -1,3 +1,5 @@
 /.idea/
 /.nova/
 /cmake-build-debug/
+/build/
+*.pdx
