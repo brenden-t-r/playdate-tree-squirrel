@@ -604,7 +604,7 @@ void collisionDetection() {
             break;
         default:
             sq_cd = CD_SQUIRREL_C;
-            printf("Shouldn't happen collisionDetection()");
+            // Shouldn't happen
     }
     struct vector2 sq_pos = {
             squirrel_x, squirrel_y
@@ -740,22 +740,6 @@ void telemetry() {
     pd->graphics->drawText(crankChangeStr, strlen(crankChangeStr), kASCIIEncoding, 14, CRANK_HEIGHT + (FONT_HEIGHT*2));
     pd->system->realloc(crankAngleStr, 0);
     pd->system->realloc(crankChangeStr, 0);
-
-    // Accelerometer checks
-//    float accX, accY, accZ;
-//    pd->system->getAccelerometer(&accX, &accY, &accZ);
-//    char *accXStr = NULL, *accYStr = NULL, *accZStr = NULL;
-//    pd->system->formatString(&accXStr, "%f", (double) accX);
-//    pd->system->formatString(&accYStr, "%f", (double) accY);
-//    pd->system->formatString(&accZStr, "%f", (double) accZ);
-//    int ACC_HEIGHT = FONT_HEIGHT * 9;
-//    pd->graphics->drawText("Accelerometer", strlen("Accelerometer"), kASCIIEncoding, 14, ACC_HEIGHT);
-//    pd->graphics->drawText(accXStr, strlen(accXStr), kASCIIEncoding, 14, ACC_HEIGHT + FONT_HEIGHT);
-//    pd->graphics->drawText(accYStr, strlen(accYStr), kASCIIEncoding, 14, ACC_HEIGHT + (FONT_HEIGHT*2));
-//    pd->graphics->drawText(accZStr, strlen(accYStr), kASCIIEncoding, 14, ACC_HEIGHT + (FONT_HEIGHT*3));
-//    pd->system->realloc(accXStr, 0);
-//    pd->system->realloc(accYStr, 0);
-//    pd->system->realloc(accZStr, 0);
 }
 
 void rotatedBoxCollider(int angle) {
