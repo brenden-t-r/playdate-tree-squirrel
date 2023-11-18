@@ -559,6 +559,8 @@ int deathScreenCheck() {
         pd->graphics->fillRect(0, 140, 400, 80, kColorBlack);
         pd->graphics->setDrawMode(kDrawModeInverted);
         pd->graphics->drawText("Press A To Try Again", strlen("Press A To Try Again"), kASCIIEncoding, 100, 160);
+        pd->system->formatString(&scoreStr, "Score: %d", score);
+        pd->graphics->drawText(scoreStr, strlen(scoreStr), kASCIIEncoding, 115, 185);
         pd->graphics->setDrawMode(kDrawModeCopy);
         PDButtons current, pushed, released;
         pd->system->getButtonState(&current, &pushed, &released);
