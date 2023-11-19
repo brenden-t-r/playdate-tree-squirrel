@@ -545,15 +545,25 @@ int titleScreenCheck() {
     return 0;
 }
 
+int death_screen_spider_x = 300;
+int death_screen_spider_y = -50;
+int death_screen_first_frame = 0;
+
 int deathScreenCheck() {
     if (IS_DEATH_SCREEN) {
-
+        if (!death_screen_first_frame) {
+            death_screen_spider_y = -200;
+        }
+        death_screen_first_frame = 1;
         if (pd->sound->fileplayer->isPlaying(filePlayer)) {
             pd->sound->fileplayer->stop(filePlayer);
         }
         if (!played_sound_death) {
             playSound(death, 1);
             played_sound_death = 1;
+        }
+        if (!pd->sound->sampleplayer->isPlaying(sp)) {
+            playSound(spiderChatter, 1);
         }
         pd->graphics->drawRotatedBitmap(death_screen, 0, 0, 0, 0, 0, 0.66f, 0.66f);
         pd->graphics->fillRect(0, 140, 400, 80, kColorBlack);
@@ -569,10 +579,28 @@ int deathScreenCheck() {
             IS_DEATH_SCREEN = 0;
             IS_TITLE_SCREEN = 1;
             IS_TITLE_SCREEN_TRANSITION = 0;
+            death_screen_first_frame = 0;
             played_sound_death = 0;
             played_sound_birds = 0;
             pd->sound->sampleplayer->stop(sp);
         }
+
+        // Spider
+        death_screen_spider_y += 1;
+        if (death_screen_spider_y >= 320) {
+            death_screen_spider_y = -50;
+        }
+        if (spider_anim_frames >= 4) {
+            pd->graphics->drawRotatedBitmap(spider2, death_screen_spider_x, death_screen_spider_y, -110, 0.5f,0.5f, 0.5f, 0.5f);
+            if (spider_anim_frames >= 7) {
+                spider_anim_frames = 0;
+            }
+        }
+        else {
+            pd->graphics->drawRotatedBitmap(spider1, death_screen_spider_x, death_screen_spider_y, -110, 0.5f,0.5f, 0.5f, 0.5f);
+        }
+        spider_anim_frames += 1;
+
         return 1;
     }
     return 0;
