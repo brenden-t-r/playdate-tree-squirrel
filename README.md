@@ -2,4 +2,4 @@
 
 Simple game made for the Playdate in C.
 
-![screenshot](./IMG_9356.png)
+![screenshot](IMG_9356.JPG)
